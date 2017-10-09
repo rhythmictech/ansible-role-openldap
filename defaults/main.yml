@@ -1,0 +1,10 @@
+---
+
+auth_master: false
+auth_slave_replid: ''
+
+auth_ldap_basedn: ''
+auth_ldap_master: ''
+auth_ldap_manager_pw: ''
+auth_ldap_binduser_pw: ''
+

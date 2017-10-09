@@ -1,0 +1,27 @@
+objectIdentifier fnetOID        1.3.6.1.4.1.100
+objectIdentifier fnetAttrType   fnetOID:1
+objectIdentifier fnetObjClass   fnetOID:2
+
+attributetype ( fnetAttrType:1
+  NAME 'fnetVdomName'
+  DESC 'Fortinet-Vdom-Name'
+  EQUALITY caseIgnoreMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  ORDERING caseIgnoreOrderingMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{128}
+  SINGLE-VALUE )
+
+attributetype ( fnetAttrType:2
+  NAME 'fnetAccessProfile'
+  DESC 'Fortinet-Access-Profile'
+  EQUALITY caseIgnoreMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  ORDERING caseIgnoreOrderingMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15{128}
+  SINGLE-VALUE )
+
+objectclass ( fnetObjClass:1
+  NAME 'fnetAdmin'
+  DESC 'Fortinet Admin'
+  AUXILIARY
+  MAY ( fnetVdomName $ fnetAccessProfile ) )

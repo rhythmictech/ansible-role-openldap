@@ -1,0 +1,202 @@
+dn: dc=nehemiah,dc=local
+objectClass: top
+objectClass: domain
+dc: nehemiah
+description: Nehemiah Hosting Environment Directory
+
+dn: ou=Groups,dc=nehemiah,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: Groups
+
+dn: ou=Users,dc=nehemiah,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: Users
+
+dn: ou=SpecialUsers,dc=nehemiah,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: SpecialUsers
+
+dn: ou=ServiceAccounts,ou=Users,dc=nehemiah,dc=local
+objectClass: top
+objectClass: organizationalUnit
+ou: ServiceAccounts
+
+dn: cn=userPasswordPolicy,dc=nehemiah,dc=local
+objectClass: organizationalRole
+objectClass: pwdPolicy
+objectClass: pwdPolicyChecker
+cn: userPasswordPolicy
+pwdAttribute: userPassword
+pwdAllowUserChange: TRUE
+pwdCheckModule: check_password.so
+pwdCheckQuality: 2
+pwdExpireWarning: 10080
+pwdGraceAuthNLimit: 0
+pwdInHistory: 3
+pwdLockoutDuration: 0
+pwdMaxAge: 15552000
+pwdMaxFailure: 5
+pwdMinLength: 6
+pwdMustChange: TRUE
+pwdSafeModify: FALSE
+
+dn: cn=servicePasswordPolicy,dc=nehemiah,dc=local
+objectClass: organizationalRole
+objectClass: pwdPolicy
+cn: servicePasswordPolicy
+pwdAttribute: userPassword
+pwdAllowUserChange: TRUE
+pwdCheckQuality: 0
+pwdExpireWarning: 0
+pwdGraceAuthNLimit: 0
+pwdInHistory: 0
+pwdLockout: FALSE
+pwdLockoutDuration: 0
+pwdMaxAge: 0
+pwdMaxFailure: 0
+pwdMinLength: 0
+pwdMustChange: FALSE
+pwdSafeModify: FALSE
+
+dn: ou=sudopolicy,dc=nehemiah,dc=local
+objectClass: top
+objectClass: organizationalUnit
+description: SUDO policy for users, groups and services
+ou: sudopolicy
+
+dn: cn=defaults,ou=sudopolicy,dc=nehemiah,dc=local
+sudoOption: !requiretty
+sudoOption: env_reset
+sudoOption: env_keep+=COLORS
+sudoOption: env_keep+=DISPLAY
+sudoOption: env_keep+=HOSTNAME
+sudoOption: env_keep+=HISTSIZE
+sudoOption: env_keep+=INPUTRC
+sudoOption: env_keep+=LS_COLORS
+sudoOption: env_keep+=MAIL
+sudoOption: env_keep+=PS1
+sudoOption: env_keep+=PS2
+sudoOption: env_keep+=USERNAME
+sudoOption: env_keep+=LANG
+sudoOption: env_keep+=LANGUAGE
+cn: defaults
+objectClass: top
+objectClass: sudoRole
+
+dn: uid=passwordreset,ou=SpecialUsers,dc=nehemiah,dc=local
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+givenName: Password
+sn: Reset
+mail: noc-notify@rhythmic.net
+cn: Password Reset
+uid: passwordreset
+pwdPolicySubentry: cn=servicePasswordPolicy,dc=nehemiah,dc=local
+
+dn: uid=repl,ou=SpecialUsers,dc=nehemiah,dc=local
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+givenName: LDAP
+sn: Repl
+mail: noc-notify@rhythmic.net
+cn: LDAP Repl
+uid: repl
+
+dn: uid=appbind,ou=SpecialUsers,dc=nehemiah,dc=local
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+givenName: App
+sn: Bind
+mail: noc-notify@rhythmic.net
+cn: App Bind
+uid: appbind
+pwdPolicySubentry: cn=servicePasswordPolicy,dc=nehemiah,dc=local
+
+dn: uid=cdaniluk,ou=Users,dc=nehemiah,dc=local
+cn: Cris Daniluk
+givenName: Cris
+sn: Daniluk
+mail: cdaniluk@rhythmic.net
+uid: cdaniluk
+homeDirectory: /home/admin/cdaniluk
+uidNumber: 8000
+sshPublicKey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCy9WiIH9o7XUKk8grLW6xnr2
+ jvQ39mzMBxPRRp+sHcX8BVC4LkamajfxmIMZkduMndkQ3FpzI/dS3xZ3kUil0cm64s+mUnMR2vz
+ izLFtA91IK2eqR+HKWYUmXCzp+iuFYY9ws9hRfwUnHQsAvIYak8slXy9uHy63HP7iGS4xC/UjMW
+ GVqb7f7pMS4XNtFARtmR+YlA3edRB80+LImjjyBKHPR+89lhJY3heCcZEUVwxT7xF60Iog8ZZ04
+ 3sfKAZhvGWEbrKLA+qlK0HKQkhN/6KGOe7gPyxmawzNs3rIsRgJrxfB41JHa8o4b2FNcVKzvDzC
+ CJzER50iIyNUZaBY7N "rhythmic-cdaniluk-20100330"
+telephoneNumber: +1 703 884 3366
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: ldapPublicKey
+objectClass: person
+objectClass: shadowAccount
+objectClass: organizationalPerson
+gidNumber: 7000
+loginShell: /bin/bash
+memberOf: cn=netadmins,ou=Groups,dc=nehemiah,dc=local
+memberOf: cn=users,ou=Groups,dc=nehemiah,dc=local
+
+dn: uid=sdickenson,ou=Users,dc=nehemiah,dc=local
+cn: Steven Dickenson
+givenName: Steven
+sn: Dickenson
+mail: sdickenson@rhythmic.net
+telephoneNumber: +1 443 995 6191
+uid: sdickenson
+gidNumber: 7000
+homeDirectory: /home/admin/sdickenson
+uidNumber: 8001
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: shadowAccount
+objectClass: posixAccount
+objectClass: ldapPublicKey
+sshPublicKey: ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEApe11n0ffFStyrxyOuXdLDYvNeD
+ PRCwXO2po4JcOKvzlbrHbHOWjKi+a1xYwd5ws2MZS1zsZbOX17m4RN5I5nd5Bv2HTp0iwja19wr
+ EN7ztZLh1WS2WcE9TqV/1L1AHkjq5o36yohK+ik3Ey80mndhbLaejYktNOcjRWq2rEIYCcFDsUW
+ ApelkiEpNf3iDLG/cZnds0uJclmI6rdCk8zfzYrLbgxKnShupn3kcSmPzxz3Dw+pkWJ4AhuLhy5
+ QFyLcPECSa0VsBBdqS8NLg+9h0QO5MxKZAe2cb/Dks5sfnzr2+Jkg+BLxr+lrKHxlTKl43EI5rC
+ itR/6okj/z0SXvxw== sdickenson-personal-20100625
+loginShell: /bin/bash
+memberOf: cn=netadmins,ou=Groups,dc=nehemiah,dc=local
+memberOf: cn=users,ou=Groups,dc=nehemiah,dc=local
+
+dn: cn=users,ou=Groups,dc=nehemiah,dc=local
+cn: users
+objectClass: top
+objectClass: posixGroup
+objectClass: groupOfUniqueNames
+gidNumber: 7000
+uniqueMember: uid=cdaniluk,ou=Users,dc=nehemiah,dc=local
+uniqueMember: uid=sdickenson,ou=Users,dc=nehemiah,dc=local
+
+dn: cn=netadminpolicy,ou=sudopolicy,dc=nehemiah,dc=local
+cn: netadminpolicy
+objectClass: top
+objectClass: sudoRole
+sudoCommand: ALL
+sudoHost: ALL
+sudoUser: %netadmins
+
+dn: cn=netadmins,ou=Groups,dc=nehemiah,dc=local
+cn: netadmins
+gidNumber: 7001
+objectClass: top
+objectClass: posixGroup
+objectClass: groupOfUniqueNames
+uniqueMember: uid=cdaniluk,ou=Users,dc=nehemiah,dc=local
+uniqueMember: uid=sdickenson,ou=Users,dc=nehemiah,dc=local
+
+

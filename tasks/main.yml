@@ -1,0 +1,87 @@
+# LDAP Server
+
+# TODO - on the first run of this, we need to start and stop slapd once to seed the DB
+# Once this happens, we can run slapd-build-config.sh as slapd-legacy.conf is changed.
+# If you haven't run it once, the build fails.
+
+- name: ensure core packages installed
+  yum: name={{ item }} state=present
+  with_items:
+    - openldap-servers
+    - openldap-clients
+  tags: ['auth']
+
+- name: ensure rsyslog config is in place
+  copy: src=etc.rsyslog.d.ldap.conf dest=/etc/rsyslog.d/ldap.conf owner=root group=root mode=0640
+  register: copy_result
+  tags: ['auth']
+
+- name: ensure rsyslog picks up the change
+  service: name=rsyslog state=restarted
+  when: copy_result | changed
+  tags: ['auth']
+
+- name: setup the directories
+  file: 
+    path: "{{ item.path }}" 
+    state: directory 
+    owner: "{{ item.owner }}" 
+    group: "{{ item.group }}" 
+    mode: 0750
+  with_items:
+    - { path: /etc/openldap/slapd.d, owner: ldap, group: ldap }
+    - { path: /etc/openldap/schema, owner: root, group: ldap }
+    - { path: /var/lib/ldap, owner: ldap, group: ldap }
+  tags: ['auth']
+
+- name: place the /etc/openldap/schema/ files
+  copy: 
+    src: "etc.openldap.schema.{{ item }}" 
+    dest: "/etc/openldap/schema/{{ item }}" 
+    owner: root 
+    group: root 
+    mode: 0640
+  with_items:
+    - fnet.schema
+    - lpk.schema
+    - rfc2307bis.schema
+    - samba.schema
+    - sudo.schema
+  tags: ['auth']
+
+- name: place the /etc/openldap/slapd-build-config.sh file
+  copy: 
+    src: etc.openldap.slapd-build-config.sh 
+    dest: /etc/openldap/slapd-build-config.sh
+    owner: root 
+    group: root 
+    mode: 0700
+  tags: ['auth']
+
+- name: place the /etc/openldap/slapd-legacy.conf file
+  template: 
+    src: etc.openldap.slapd-legacy.conf.j2
+    dest: /etc/openldap/slapd-legacy.conf
+    owner: root
+    group: ldap
+    mode: 0640
+  tags: ['auth']
+
+- name: place the /etc/sysconfig/ldap file
+  template:
+    src: etc.sysconfig.ldap.j2
+    dest: /etc/sysconfig/ldap
+    owner: root
+    group: root
+    mode: 0640
+  tags: ['auth']
+
+- name: place the /var/lib/DB_CONFIG lib file
+  copy: 
+    src: var.lib.ldap.DB_CONFIG 
+    dest: /var/lib/ldap/DB_CONFIG
+    owner: ldap 
+    group: ldap 
+    mode: 0640
+  tags: ['auth']
+
