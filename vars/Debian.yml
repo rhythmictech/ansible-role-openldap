@@ -1,0 +1,12 @@
+auth_packages:
+  - slapd
+  - ldap-utils
+
+auth_ldap_chain_module: "back_ldap.la"
+auth_ldap_config_dir: /etc/ldap
+auth_ldap_user: openldap
+auth_ldap_group: openldap
+auth_init_script_template: etc.default.slapd.j2
+auth_init_script_dest: /etc/default/slapd
+auth_ldap_modulepath: /usr/lib/ldap
+auth_ldap_rundir: /var/run/slapd

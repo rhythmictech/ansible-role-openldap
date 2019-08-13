@@ -1,10 +1,25 @@
 ---
 
+auth: []
 auth_master: false
-auth_slave_replid: ''
+auth_replid: ''
 
 auth_ldap_basedn: ''
 auth_ldap_master: ''
 auth_ldap_manager_pw: ''
-auth_ldap_binduser_pw: ''
+auth_ldap_repl_pw: ''
 
+auth_ldap_schemas:
+  - fnet.schema
+  - lpk.schema
+  - rfc2307bis.schema
+  - samba.schema
+  - sudo.schema
+
+auth_use_rsyslog: true
+
+auth_ldap_bindusers: []
+auth_ldap_accessusers: []
+auth_tls_chain_loc: "{{ auth_ldap_config_dir }}/cacerts/cacert.pem"
+auth_tls_cert_loc: "/etc/pki/tls/certs/{{ ansible_fqdn }}.crt"
+auth_tls_key_loc: "/etc/pki/tls/private/{{ ansible_fqdn }}.key"
