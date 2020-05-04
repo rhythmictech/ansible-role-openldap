@@ -1,27 +1,29 @@
 # {{ ansible_managed }}
 #
-include                     /etc/openldap/schema/core.schema
-include                     /etc/openldap/schema/cosine.schema
-include                     /etc/openldap/schema/inetorgperson.schema
-include                     /etc/openldap/schema/rfc2307bis.schema
-include                     /etc/openldap/schema/fnet.schema
-include                     /etc/openldap/schema/lpk.schema
-include                     /etc/openldap/schema/ppolicy.schema
-include                     /etc/openldap/schema/sudo.schema
-include                     /etc/openldap/schema/samba.schema
+include                     {{ auth_ldap_config_dir }}/schema/core.schema
+include                     {{ auth_ldap_config_dir }}/schema/cosine.schema
+include                     {{ auth_ldap_config_dir }}/schema/inetorgperson.schema
+include                     {{ auth_ldap_config_dir }}/schema/ppolicy.schema
+{% for schema in auth_ldap_schemas %}
+include                     {{ auth_ldap_config_dir }}/schema/{{ schema }}
+{% endfor %}
 
-modulepath                  /usr/lib64/openldap
+modulepath                  {{ auth_ldap_modulepath }}
 moduleload                  ppolicy.la
 moduleload                  memberof.la
 moduleload                  syncprov.la
-{% if not auth[ansible_fqdn].master|default(auth_master) %}
-moduleload                  chain.la
+{% if (ansible_fqdn in auth and not auth[ansible_fqdn].master) or not auth_master %}
+moduleload                  {{ auth_ldap_chain_module }}
+{% endif %}
+{% if ansible_os_family == 'Debian' %}
+moduleload                  back_bdb.la
+moduleload                  back_monitor.la
 {% endif %}
 
-pidfile                     /var/run/openldap/slapd.pid
-argsfile                    /var/run/openldap/slapd.args
+pidfile                     {{ auth_ldap_rundir }}/slapd.pid
+argsfile                    {{ auth_ldap_rundir }}/slapd.args
 
-{% if not auth[ansible_fqdn].master|default(auth_master) %}
+{% if (ansible_fqdn in auth and not auth[ansible_fqdn].master) or not auth_master %}
 ## OpenLDAP docs want chaining near the top of the config
 overlay chain
 chain-uri                   "ldaps://{{ auth_ldap_master }}/"
@@ -34,9 +36,9 @@ chain-return-error          TRUE
 ## END of chaining
 {% endif %}
 
-TLSCACertificateFile        /etc/openldap/cacerts/cacert.pem
-TLSCertificateFile          /etc/pki/tls/certs/{{ ansible_fqdn }}.crt
-TLSCertificateKeyFile       /etc/pki/tls/private/{{ ansible_fqdn }}.key
+TLSCACertificateFile        {{ auth_tls_chain_loc }}
+TLSCertificateFile          {{ auth_tls_cert_loc }}
+TLSCertificateKeyFile       {{ auth_tls_key_loc }}
 TLSVerifyClient             never
 
 access to attrs=userpassword,sshPublicKey
@@ -44,17 +46,23 @@ access to attrs=userpassword,sshPublicKey
     by group/groupOfUniqueNames/uniqueMember="cn=netadmins,ou=Groups,{{ auth_ldap_basedn }}" manage
     by dn.exact="uid=passwordreset,ou=SpecialUsers,{{ auth_ldap_basedn }}" write
     by * read
-access to dn.children="dc=local"
+access to dn.children="{{ auth_ldap_basedn.split(",")[-1] }}"
     by self read
     by group/groupOfUniqueNames/uniqueMember="cn=netadmins,ou=Groups,{{ auth_ldap_basedn }}" manage
     by dn.exact="uid=appbind,ou=SpecialUsers,{{ auth_ldap_basedn }}" read
     by dn.exact="uid=repl,ou=SpecialUsers,{{ auth_ldap_basedn }}" read
     by dn.exact="uid=passwordreset,ou=SpecialUsers,{{ auth_ldap_basedn }}" read
+{% for binduser in auth_ldap_bindusers %}
+    by dn.exact="{{ binduser }},{{ auth_ldap_basedn }}" read
+{% endfor %}
 access to *
     by group/groupOfUniqueNames/uniqueMember="cn=netadmins,ou=Groups,{{ auth_ldap_basedn }}" manage
     by dn.exact="uid=appbind,ou=SpecialUsers,{{ auth_ldap_basedn }}" read
     by dn.exact="uid=nagios,ou=SpecialUsers,{{ auth_ldap_basedn }}" read
     by dn.exact="uid=repl,ou=SpecialUsers,{{ auth_ldap_basedn }}" read
+{% for accessuser in auth_ldap_accessusers %}
+    by dn.exact="{{ accessuser }},{{ auth_ldap_basedn }}" read
+{% endfor %}
     by * none
 
 sizelimit                   5000
@@ -80,8 +88,7 @@ ppolicy_hash_cleartext
 overlay memberof
 memberof-group-oc           groupOfUniqueNames
 memberof-member-ad          uniqueMember
-
-{% if auth[ansible_fqdn].master|default(auth_master) %}
+{% if (ansible_fqdn in auth and auth[ansible_fqdn].master) or auth_master %}
 overlay                     syncprov
 syncprov-checkpoint         50 5
 syncprov-sessionlog         50
@@ -97,12 +104,12 @@ index   sudoHost,sudoUser                               eq,sub
 #log connection activity only
 loglevel 16
 
-{% if not auth[ansible_fqdn].master|default(auth_master) %}
-syncrepl rid={{ auth[ansible_fqdn]['slave_replid'] }}
+{% if (ansible_fqdn in auth and not auth[ansible_fqdn].master) or not auth_master %}
+syncrepl rid={{ auth[ansible_fqdn]['slave_replid'] if ansible_fqdn in auth else auth_replid }}
     provider=ldaps://{{ auth_ldap_master }}/
     type=refreshAndPersist
     interval=00:00:01:00
-    retry="5 5 300 +" 
+    retry="5 5 300 +"
     searchbase="{{ auth_ldap_basedn }}"
     attrs="*,+"
     bindmethod=simple

@@ -1,0 +1,6 @@
+#!/bin/sh
+rm -rf {{ auth_ldap_config_dir }}/slapd.d/*
+slaptest -f {{ auth_ldap_config_dir }}/slapd-legacy.conf -F {{ auth_ldap_config_dir }}/slapd.d/
+chown -R {{ auth_ldap_user }}:{{ auth_ldap_group }} {{ auth_ldap_config_dir }}/slapd.d /var/lib/ldap
+chmod -R 000 {{ auth_ldap_config_dir }}/slapd.d
+chmod -R u+rwX {{ auth_ldap_config_dir }}/slapd.d

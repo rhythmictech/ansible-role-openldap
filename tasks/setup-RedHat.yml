@@ -1,0 +1,5 @@
+- name: ensure core packages installed
+  yum:
+    name: "{{ auth_packages }}"
+    state: present
+  tags: ['auth']

@@ -1,0 +1,12 @@
+auth_packages:
+  - openldap-servers
+  - openldap-clients
+
+auth_ldap_chain_module: "chain.la"
+auth_ldap_config_dir: /etc/openldap
+auth_ldap_user: ldap
+auth_ldap_group: ldap
+auth_init_script_template: etc.sysconfig.ldap.j2
+auth_init_script_dest: /etc/sysconfig/ldap
+auth_ldap_modulepath: /usr/lib64/openldap
+auth_ldap_rundir: /var/run/openldap
