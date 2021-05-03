@@ -2,7 +2,7 @@ auth_packages:
   - openldap-servers
   - openldap-clients
 
-auth_ldap_chain_module: "chain.la"
+auth_ldap_chain_module: "{{ (ansible_distribution_major_version == 6) | ternary('chain.la', 'back_ldap.la') }}"
 auth_ldap_config_dir: /etc/openldap
 auth_ldap_user: ldap
 auth_ldap_group: ldap
